@@ -29,7 +29,8 @@ Screen equities for significant price drops over configurable lookback horizons.
 │   │       ├── calendar_service.py    # Trading calendar resolution (exchange_calendars)
 │   │       ├── market_data_service.py # Price fetching via yfinance
 │   │       └── universe_service.py    # Index constituent lists
-│   └── requirements.txt
+│   ├── pyproject.toml
+│   └── .venv/                    # created by uv
 ├── frontend/         # React + TypeScript + Vite
 │   └── src/
 │       ├── App.tsx
@@ -56,8 +57,8 @@ Screen equities for significant price drops over configurable lookback horizons.
 
 ```bash
 cd backend
-pip install -r requirements.txt
-python3 -m uvicorn app.main:app --reload --port 8000
+uv sync
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
 ### Frontend
