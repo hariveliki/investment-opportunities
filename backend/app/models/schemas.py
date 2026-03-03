@@ -115,6 +115,16 @@ class StockDetail(BaseModel):
     corporate_actions: list[dict] = Field(default_factory=list)
 
 
+class ScanSummary(BaseModel):
+    id: int
+    universe: str
+    as_of_date: str
+    horizon: str
+    threshold_pct: float
+    result_count: int
+    created_at: str
+
+
 class SavedScan(BaseModel):
     id: str
     name: str

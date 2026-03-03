@@ -194,6 +194,10 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# SQLite database
+backend/data/
+*.db
+
 # Node.js
 node_modules/
 frontend/dist/

@@ -2,20 +2,25 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 
 from app.models.schemas import (
     PriceBasis,
     ScanRequest,
     ScanResponse,
+    ScanSummary,
     UNIVERSE_LABELS,
     UNIVERSE_EXCHANGE_CALENDARS,
     UniverseInfo,
 )
 from app.services import analytics_engine, universe_service
+from app.services import cache_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1", tags=["scans"])
 
@@ -31,6 +36,7 @@ async def scan_drawdowns(
     min_price: Optional[float] = Query(default=None),
     sector: Optional[str] = Query(default=None),
     custom_tickers: Optional[str] = Query(default=None, description="Comma-separated tickers"),
+    bypass_cache: bool = Query(default=False, description="Skip cache lookup"),
 ):
     request = ScanRequest(
         universe=universe,
@@ -43,7 +49,39 @@ async def scan_drawdowns(
         sector=sector,
         custom_tickers=custom_tickers.split(",") if custom_tickers else None,
     )
-    return await analytics_engine.run_scan(request)
+
+    if not bypass_cache:
+        try:
+            cached = await cache_service.get_cached_scan(request)
+            if cached is not None:
+                return cached
+        except Exception:
+            logger.exception("Cache lookup failed")
+
+    response = await analytics_engine.run_scan(request)
+
+    try:
+        await cache_service.store_scan(request, response)
+    except Exception:
+        logger.exception("Failed to store scan in cache")
+
+    return response
+
+
+@router.get("/scans/history", response_model=list[ScanSummary])
+async def scan_history(
+    limit: int = Query(default=50, ge=1, le=200),
+    universe: Optional[str] = Query(default=None),
+):
+    return await cache_service.list_past_scans(limit=limit, universe=universe)
+
+
+@router.get("/scans/{scan_id}")
+async def get_scan(scan_id: int):
+    result = await cache_service.get_scan_by_id(scan_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Scan not found")
+    return result
 
 
 @router.get("/universes", response_model=list[UniverseInfo])
