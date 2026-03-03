@@ -26,6 +26,12 @@ class UniverseId(str, Enum):
     SMI = "smi"
     STOXX600 = "stoxx600"
     NIKKEI225 = "nikkei225"
+    MSCI_EUROPE = "msci_europe"
+    MSCI_USA = "msci_usa"
+    MSCI_EM_IMI = "msci_em_imi"
+    MSCI_WORLD_SC = "msci_world_sc"
+    MSCI_JAPAN = "msci_japan"
+    MSCI_PACIFIC_EX_JP = "msci_pacific_ex_jp"
     CUSTOM = "custom"
 
 
@@ -38,6 +44,12 @@ UNIVERSE_LABELS: dict[str, str] = {
     "smi": "SMI",
     "stoxx600": "STOXX Europe 600",
     "nikkei225": "Nikkei 225",
+    "msci_europe": "MSCI Europe",
+    "msci_usa": "MSCI USA",
+    "msci_em_imi": "MSCI EM IMI",
+    "msci_world_sc": "MSCI World Small Cap",
+    "msci_japan": "MSCI Japan",
+    "msci_pacific_ex_jp": "MSCI Pacific ex-Japan",
 }
 
 
@@ -50,6 +62,12 @@ UNIVERSE_EXCHANGE_CALENDARS: dict[str, str] = {
     "smi": "XSWX",
     "stoxx600": "XLON",
     "nikkei225": "XTKS",
+    "msci_europe": "XLON",
+    "msci_usa": "XNYS",
+    "msci_em_imi": "XNYS",
+    "msci_world_sc": "XNYS",
+    "msci_japan": "XTKS",
+    "msci_pacific_ex_jp": "XASX",
 }
 
 
